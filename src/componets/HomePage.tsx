@@ -13,7 +13,9 @@ import { ENV, Strategy, TokenInfo, TokenListProvider } from "@solana/spl-token-r
 import { WalletSendTransactionError } from "@solana/wallet-adapter-base";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import { useEffect, useState } from "react";
-
+import TokenAccCreateModal from "./TokenAccCreateModal"
+import TokenTransferModal from "./TokenTransferModal"
+import TransferSuccess from "./TransferSuccess"
 
 interface TokenAccount {
     owner: string;
@@ -331,7 +333,7 @@ const HomePage = () =>  {
                             handleTransfer();
                         }}
                     >Transfer</button>
-                    {/* {isLoading && <div className="mt-8 text-xl text-center text-teal-50">Waiting...</div>}
+                    {isLoading && <div className="mt-8 text-xl text-center text-teal-50">Waiting...</div>}
                     {ataStatus === "INITIALIZED" && <TokenAccCreateModal handleCreateAssociatedTokenAcc={handleCreateAssociatedTokenAcc} receiverAddress={receiverAddress} handleClose={handleClose} />}
                     {ataStatus === "SUCCESS" && (
                         <TokenTransferModal
@@ -358,7 +360,7 @@ const HomePage = () =>  {
                             amount={transferAmount}
                             tokenSymbol={selectedAcc.symbol ?? ""}
                         />
-                        )} */}
+                        )}
                 </div>
             </form>
         </div >
