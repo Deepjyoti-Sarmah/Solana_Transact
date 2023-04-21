@@ -145,7 +145,109 @@ const HomePage = () =>  {
         });
     };
 
-    
+    function validateAccount( receiverAddress: string) {
+        try {
+            const publicKey = new PublicKey(receiverAddress);
+            const isValid = PublicKey.isOnCurve(publicKey);
+            setIsValidAddress(isValid);
+            return isValid;
+        } catch (error) {
+            setIsValidAddress(false);
+            return false;
+        }
+    }
+
+    async function handleTransfer() {
+        if (!publicKey) {
+            alert("Please Connect to a wallet");
+            return;
+        }
+        if (!selectedAcc.mint){
+            alert("Please Select a token to tranfer");
+            return;
+        }
+        transferAmount > selectedAcc.balance && setIsValidAddress(false);
+        if (transferAmount <= selectedAcc.balance) {
+            try {
+                if (validateAccount(receiverAddress)) {
+                    setIsLoading(true);
+                    if (selectedAcc.name === "Solana") {
+                        const receiver = new PublicKey(receiverAddress);
+                        const transaction = new Transaction();
+                        const transferSolInstructions = SystemProgram.transfer({
+                            fromPubkey: publicKey,
+                            toPubkey: receiver,
+                            lamports: LAMPORTS_PER_SOL * transferAmount,
+                        });
+                        transaction.add(transferSolInstructions);
+                        await sendTransaction(transaction, connection)
+                                .then((data) => {
+                                    setExplorerLink(`https://explorer.solana.com/tx/${data}?cluster=devnet`);
+                                    console.log(explorerLink);
+                                    setTransferStatus(true);
+                                })
+                                .catch((err) => {
+                                    if (err instanceof WalletSendTransactionError) {
+                                        alert("Transaction failed");
+                                    }
+                                });
+                        setIsLoading(false);
+                    }
+
+                    const destWallet = new PublicKey(receiverAddress);
+                    const fromWallet = Keypair.generate();
+                    const mint = new PublicKey(selectedAcc.mint ?? "");
+                    const sourceAccount = await getOrCreateAssociatedTokenAccount(connection,fromWallet , mint, publicKey!!);
+
+                    try {
+                        const destinationAccount = await getOrCreateAssociatedTokenAccount(connection, fromWallet, mint, destWallet);
+                        const transaction = new Transaction();
+                        transaction.add(createTransferInstruction(sourceAccount.address, destinationAccount.address, publicKey!!, transferAmount * Math.pow(10, selectedAcc.decimalPlaces ?? 0)));
+                        await sendTransaction(transaction, connection).then((data) => {
+                            setExplorerLink(`https://explorer.solana.com/tx/${data}?cluster=devnet`);
+                            console.log(explorerLink);
+                            setTransferStatus(true);
+                        });
+                    } catch(error) {
+                        if (error instanceof TokenAccountNotFoundError) {
+                            console.log("from TokenAccountNotFounndError");
+                            setAtaStatus("INITIALIZED");
+                        }
+                    }
+                    setIsLoading(false);
+                }
+            }catch(error) {
+                if (error instanceof WalletSendTransactionError) {
+                    console.log("Transaction failed");
+                }
+            }
+        }
+    }
+
+    function handleClose() {
+        setTimeout(() => {
+            setAtaStatus("NOT_INITIALIZED");
+        }, 200);
+        setIsLoading(false);
+    }
+
+    async function handleCreateAssociatedTokenAcc() {
+        setTimeout(() => {
+            setAtaStatus("PENDING");
+        }, 200);
+        setIsLoading(true);
+        const destPublicKey = new PublicKey(receiverAddress);
+        const mintPublicKey = new PublicKey(selectedAcc.mint?? "");
+
+        const associatedTokenAddress = await getAssociatedTokenAddress(mintPublicKey, destPublicKey, false);
+        const transaction = new Transaction();
+        transaction.add(createAssociatedTokenAccountInstruction(publicKey!!, associatedTokenAddress, destPublicKey, mintPublicKey));
+        await sendTransaction(transaction,connection).then((data) => {
+            setAtaStatus("SUCCESS");
+            setExplorerLink(`https://explorer.solana.com/tx/${data}?cluster=devnet`);
+        });
+        setIsLoading(false);
+    }
 
     return (
     <>
@@ -162,9 +264,15 @@ const HomePage = () =>  {
                 <div className='w-11/12 md:w-6/12 mx-auto mb-3 text-white'>
                     <label htmlFor="recipientAdress"
                         className='text-xl font-bold' >
-                            Enter recipient adress
-                        <input type="text" name="recipientAdress" placeholder='Enter address'
+                            Enter recipient adress {!isValidAddress && <p className="ml-4 text-red-600">Invalid address</p>}
+                        <input 
+                            type="text" name="recipientAdress" placeholder='Enter address'
                             className='px-3 py-3 text-gray-600 placeholder-blueGray-300 relative bg-white rounded text-md border-0 shadow outline-none focus:outline-none focus:ring w-full'
+                            value={receiverAddress}
+                            disabled= {isLoading}
+                            onChange= {(e) => {
+                                setReceiverAddress(e.target.value);
+                            }}
                         />
                     </label>
                 </div>
@@ -172,9 +280,16 @@ const HomePage = () =>  {
                 <div className='w-11/12 md:w-6/12 mx-auto mb-3 text-white'>
                     <label htmlFor="amount"
                         className='text-xl font-bold'
-                    >   Amount
-                        <input type="number" name="amount" min={0}
+                    >   Amount {!isValidAmount && <p className="ml-20 text-red-600">Invalid amount</p>}
+                        <input 
+                            type="number" name="amount" min={0}
                             className='px-3 py-3 text-gray-600 placeholder-blueGray-300 relative bg-white rounded text-md border-0 shadow outline-none focus:outline-none focus:ring w-full'
+                            value={transferAmount}
+                            disabled={isLoading}
+                            onChange= {(e) => {
+                                setIsValidAmount(true);
+                                setTransferAmount(parseFloat(e.target.value));
+                            }}
                         />
                     </label>
                 </div>
@@ -183,21 +298,67 @@ const HomePage = () =>  {
                     <label htmlFor='selectedTokenAccount'
                         className='text-xl font-bold'
                     >
-                        Choose token
+                        Choose token:
                         <select id='selectedTokenAccount' name='selectedTokenAccount'
                             className='px-3 py-3 text-gray-500 placeholder-blueGray-300 relative bg-white rounded text-md border-0 shadow outline-none focus:outline-none focus:ring w-full'
+                            value={JSON.stringify(selectedAcc)}
+                            onChange= {(e) => {
+                                console.log(selectedAcc);
+                                setSelectedAcc(JSON.parse(e.target.value));
+                            }}
                         >
-                            <option>
+                            <option key={-1} value={-1}>
                                 Select a token
                             </option>
+                            {tokenAccounts.map((account, index) => {
+                                return(
+                                    <option key={index} value={JSON.stringify(account)}>
+                                        {account.name ?? `Token-${account.mint.slice(0,10)}`}
+                                    </option>
+                                );
+                            })}
                         </select>
                     </label>
                 </div>
                     
                 <div className='m-1 flex flex-col items-center'>
-                    <button type="submit"
+                    <button 
+                        type="submit"
                         className='bg-blue-600  text-white active:bg-blue-800 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150'
-                    >Submit</button>
+                        disabled = {isLoading}
+                        onClick = {(e) => {
+                            e.preventDefault();
+                            handleTransfer();
+                        }}
+                    >Transfer</button>
+                    {/* {isLoading && <div className="mt-8 text-xl text-center text-teal-50">Waiting...</div>}
+                    {ataStatus === "INITIALIZED" && <TokenAccCreateModal handleCreateAssociatedTokenAcc={handleCreateAssociatedTokenAcc} receiverAddress={receiverAddress} handleClose={handleClose} />}
+                    {ataStatus === "SUCCESS" && (
+                        <TokenTransferModal
+                            explorerLink={explorerLink}
+                            receiverAddress={receiverAddress}
+                            handleTransfer={() => {
+                            setTimeout(() => {
+                                setAtaStatus("COMPLETED");
+                            }, 200);
+                            handleTransfer();
+                            }}
+                            handleClose={handleClose}
+                        />
+                        )}
+                        {transferStatus && (
+                        <TransferSuccess
+                            explorerLink={explorerLink}
+                            receiverAddress={receiverAddress}
+                            handleClose={() => {
+                            setTimeout(() => {
+                                setTransferStatus(false);
+                            }, 200);
+                            }}
+                            amount={transferAmount}
+                            tokenSymbol={selectedAcc.symbol ?? ""}
+                        />
+                        )} */}
                 </div>
             </form>
         </div >
