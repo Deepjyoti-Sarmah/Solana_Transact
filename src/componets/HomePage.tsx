@@ -11,7 +11,9 @@ import {
 } from "@solana/spl-token";
 import { ENV, Strategy, TokenInfo, TokenListProvider } from "@solana/spl-token-registry";
 import { WalletSendTransactionError } from "@solana/wallet-adapter-base";
+
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
+
 import { useEffect, useState } from "react";
 import TokenAccCreateModal from "./TokenAccCreateModal"
 import TokenTransferModal from "./TokenTransferModal"
@@ -125,11 +127,11 @@ const HomePage = () =>  {
             //Try to fetch matadata
             try {
                 const mintPubKey = new PublicKey(mint);
-                let pda = await (Metadata as any).getPDA(mintPubKey);
-                let res = await (Metadata as any).load(connection, pda);
+                let pda =  await Metadata.getPDA(mintPubKey);
+                let res = await Metadata.load(connection, pda);
 
                 tokenAcc.name = res.data.data.name;
-                tokenAcc.symbol = res.data.data.data.symbol;
+                tokenAcc.symbol = res.data.data.symbol;
             } catch( TypeError) {
                 console.error(TypeError);
             }
@@ -333,7 +335,7 @@ const HomePage = () =>  {
                             handleTransfer();
                         }}
                     >Transfer</button>
-                    {isLoading && <div className="mt-8 text-xl text-center text-teal-50">Waiting...</div>}
+                    {/* {isLoading && <div className="mt-8 text-xl text-center text-teal-50">Waiting...</div>}
                     {ataStatus === "INITIALIZED" && <TokenAccCreateModal handleCreateAssociatedTokenAcc={handleCreateAssociatedTokenAcc} receiverAddress={receiverAddress} handleClose={handleClose} />}
                     {ataStatus === "SUCCESS" && (
                         <TokenTransferModal
@@ -360,7 +362,7 @@ const HomePage = () =>  {
                             amount={transferAmount}
                             tokenSymbol={selectedAcc.symbol ?? ""}
                         />
-                        )}
+                        )} */}
                 </div>
             </form>
         </div >

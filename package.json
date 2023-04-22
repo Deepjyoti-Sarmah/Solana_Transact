@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@metaplex-foundation/mpl-token-metadata": "^2.10.0",
+    "@metaplex-foundation/mpl-token-metadata": "^0.0.2",
     "@solana/spl-token": "^0.3.7",
     "@solana/spl-token-registry": "^0.2.4574",
     "@solana/wallet-adapter-base": "^0.9.22",
