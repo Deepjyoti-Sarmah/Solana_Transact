@@ -10,7 +10,7 @@ export default function TokenAccCreateModal(props: Props) {
     const [close, setClose] = useState(false);
     return (
         <>
-        <div className="h-full w-full absolute left-1/2 top-1/2 translate-x-50prev translate-y-50prev bg-black opacity-50"></div>
+        <div className="h-full w-full absolute left-1/2 top-1/2 translate-x-50prev translate-y-50prev bg-black opacity-50">
         <div className={`w-130 absolute left-1/2 top-0 opacity-0 ml-45rev rounded-lg bg-neutral-200 border border-zinc-900 shadow-xl ${close ? "top-1/3 opacity-100 animate-slideout" : "top-0 opacity-0 animate-slidein"}`}>
             <p className="m-0 p-3 text-xl border-b border-zinc-900">Create Associated Token Account</p>
             <div className="p-3">
@@ -41,6 +41,7 @@ export default function TokenAccCreateModal(props: Props) {
                 Continue
             </button>
             </div>
+        </div>
         </div>
         </>
     );

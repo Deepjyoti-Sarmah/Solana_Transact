@@ -335,6 +335,7 @@ const HomePage = () =>  {
                             handleTransfer();
                         }}
                     >Transfer</button>
+                </div>
                     {/* {isLoading && <div className="mt-8 text-xl text-center text-teal-50">Waiting...</div>}
                     {ataStatus === "INITIALIZED" && <TokenAccCreateModal handleCreateAssociatedTokenAcc={handleCreateAssociatedTokenAcc} receiverAddress={receiverAddress} handleClose={handleClose} />}
                     {ataStatus === "SUCCESS" && (
@@ -363,7 +364,6 @@ const HomePage = () =>  {
                             tokenSymbol={selectedAcc.symbol ?? ""}
                         />
                         )} */}
-                </div>
             </form>
         </div >
     </>
