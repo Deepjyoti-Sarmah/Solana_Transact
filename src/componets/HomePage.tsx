@@ -15,9 +15,9 @@ import { WalletSendTransactionError } from "@solana/wallet-adapter-base";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 
 import { useEffect, useState } from "react";
-import TokenAccCreateModal from "./TokenAccCreateModal"
-import TokenTransferModal from "./TokenTransferModal"
-import TransferSuccess from "./TransferSuccess"
+// import TokenAccCreateModal from "./TokenAccCreateModal"
+// import TokenTransferModal from "./TokenTransferModal"
+// import TransferSuccess from "./TransferSuccess"
 
 interface TokenAccount {
     owner: string;
@@ -228,30 +228,30 @@ const HomePage = () =>  {
         }
     }
 
-    function handleClose() {
-        setTimeout(() => {
-            setAtaStatus("NOT_INITIALIZED");
-        }, 200);
-        setIsLoading(false);
-    }
+    // function handleClose() {
+    //     setTimeout(() => {
+    //         setAtaStatus("NOT_INITIALIZED");
+    //     }, 200);
+    //     setIsLoading(false);
+    // }
 
-    async function handleCreateAssociatedTokenAcc() {
-        setTimeout(() => {
-            setAtaStatus("PENDING");
-        }, 200);
-        setIsLoading(true);
-        const destPublicKey = new PublicKey(receiverAddress);
-        const mintPublicKey = new PublicKey(selectedAcc.mint?? "");
+    // async function handleCreateAssociatedTokenAcc() {
+    //     setTimeout(() => {
+    //         setAtaStatus("PENDING");
+    //     }, 200);
+    //     setIsLoading(true);
+    //     const destPublicKey = new PublicKey(receiverAddress);
+    //     const mintPublicKey = new PublicKey(selectedAcc.mint?? "");
 
-        const associatedTokenAddress = await getAssociatedTokenAddress(mintPublicKey, destPublicKey, false);
-        const transaction = new Transaction();
-        transaction.add(createAssociatedTokenAccountInstruction(publicKey!!, associatedTokenAddress, destPublicKey, mintPublicKey));
-        await sendTransaction(transaction,connection).then((data) => {
-            setAtaStatus("SUCCESS");
-            setExplorerLink(`https://explorer.solana.com/tx/${data}?cluster=devnet`);
-        });
-        setIsLoading(false);
-    }
+    //     const associatedTokenAddress = await getAssociatedTokenAddress(mintPublicKey, destPublicKey, false);
+    //     const transaction = new Transaction();
+    //     transaction.add(createAssociatedTokenAccountInstruction(publicKey!!, associatedTokenAddress, destPublicKey, mintPublicKey));
+    //     await sendTransaction(transaction,connection).then((data) => {
+    //         setAtaStatus("SUCCESS");
+    //         setExplorerLink(`https://explorer.solana.com/tx/${data}?cluster=devnet`);
+    //     });
+    //     setIsLoading(false);
+    // }
 
     return (
     <>
