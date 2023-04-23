@@ -6,8 +6,8 @@ import {
     getOrCreateAssociatedTokenAccount,
     createTransferInstruction,
     TokenAccountNotFoundError,
-    getAssociatedTokenAddress,
-    createAssociatedTokenAccountInstruction,
+    // getAssociatedTokenAddress,
+    // createAssociatedTokenAccountInstruction,
 } from "@solana/spl-token";
 import { ENV, Strategy, TokenInfo, TokenListProvider } from "@solana/spl-token-registry";
 import { WalletSendTransactionError } from "@solana/wallet-adapter-base";
