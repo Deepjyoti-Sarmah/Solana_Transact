@@ -44,8 +44,8 @@ const HomePage = () =>  {
     const [isValidAmount, setIsValidAmount] = useState(true);
     const [isValidAddress, setIsValidAddress] = useState(true);
     const [explorerLink, setExplorerLink] = useState("");
-    const [transferStatus, setTransferStatus] = useState(false);
-    const [ataStatus, setAtaStatus] = useState("NOT_INITIALIZED");
+    // const [transferStatus, setTransferStatus] = useState(false);
+    // const [ataStatus, setAtaStatus] = useState("NOT_INITIALIZED");
     const [isLoading, setIsLoading] = useState(false);
 
     const { connection } = useConnection();
@@ -108,7 +108,7 @@ const HomePage = () =>  {
             ],
         });
 
-        accounts.forEach(async (account, i) => {
+        accounts.forEach(async (account) => {
             let tokenAcc: TokenAccount = {
                 owner: "",
                 mint: "",
@@ -188,7 +188,7 @@ const HomePage = () =>  {
                                 .then((data) => {
                                     setExplorerLink(`https://explorer.solana.com/tx/${data}?cluster=devnet`);
                                     console.log(explorerLink);
-                                    setTransferStatus(true);
+                                    // setTransferStatus(true);
                                 })
                                 .catch((err) => {
                                     if (err instanceof WalletSendTransactionError) {
@@ -210,12 +210,12 @@ const HomePage = () =>  {
                         await sendTransaction(transaction, connection).then((data) => {
                             setExplorerLink(`https://explorer.solana.com/tx/${data}?cluster=devnet`);
                             console.log(explorerLink);
-                            setTransferStatus(true);
+                            // setTransferStatus(true);
                         });
                     } catch(error) {
                         if (error instanceof TokenAccountNotFoundError) {
                             console.log("from TokenAccountNotFounndError");
-                            setAtaStatus("INITIALIZED");
+                            // setAtaStatus("INITIALIZED");
                         }
                     }
                     setIsLoading(false);
