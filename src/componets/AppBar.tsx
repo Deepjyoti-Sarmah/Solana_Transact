@@ -9,7 +9,6 @@ const AppBar = () => {
                     <a href="/" className='text-2xl font-extrabold'>DevNet</a>
                     <div>
                         <div>
-                            {/* <button className='bg-amber-500  text-black active:bg-blue-800 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150'>Select Wallet</button> */}
                             <WalletMultiButton />
                         </div>
                     </div>
